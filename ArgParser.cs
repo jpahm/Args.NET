@@ -5,12 +5,18 @@ namespace Args.NET
     /// <summary>
     /// The definition of a CLI argument.
     /// </summary>
-    public struct ArgDefinition(string name, bool required, string description, string usage)
+    public struct ArgDefinition(string name, bool isFlag, bool required, string description, string usage)
     {
         /// <summary>
         /// The argument's name. Will automatically be prefixed by '--' during searches.
         /// </summary>
         public string Name { get; set; } = name;
+
+        /// <summary>
+        /// Whether the argument is a flag or not. If true, the parser will not look for a value after the arg and a missing value will not trigger an exception.
+        /// </summary>
+        public bool IsFlag { get; set; } = isFlag;
+
         /// <summary>
         /// Whether the argument is required or not. Missing required args will trigger an exception.
         /// </summary>
@@ -54,7 +60,7 @@ namespace Args.NET
                 if (ArgVals["help"] is not null)
                 {
                     Console.Write("Usage:\n\n");
-                    foreach (var def in ArgDefs.Values)
+                    foreach (var def in argDefs.Append(helpDef))
                     {
                         Console.Write($"{def.Usage}\n{def.Description}\n\n");
                     }
@@ -130,9 +136,14 @@ namespace Args.NET
                     throw new ArgumentException($"Required argument '--{argDef.Name}' not found.");
                 else return null;
             }
-            // Return "true" string if no value after argument name; argument will be treated as a flag
-            if (idx + 1 >= args.Length || args[idx+1].StartsWith("--"))
-                return true.ToString();
+            // Argument doesn't have a value after it, return "true" for parsing to bool if argument is a flag, otherwise throw an exception
+            if (idx + 1 >= args.Length || args[idx + 1].StartsWith("--"))
+            {
+                if (argDef.IsFlag)
+                    return true.ToString();
+                else
+                    throw new ArgumentException($"Non-flag argument '--{argDef.Name}' is missing a value.");
+            }
             else return args[idx + 1];
         }
     }
