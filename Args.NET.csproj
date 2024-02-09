@@ -6,4 +6,21 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="readme.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <PackageId>Args.NET</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>jpahm</Authors>
+    <Company></Company>
+    <PackageDescription>An extremely simple .NET CLI arg parsing library.</PackageDescription>
+    <RepositoryUrl>https://github.com/jpahm/Args.NET</RepositoryUrl>
+  </PropertyGroup>
+
 </Project>

@@ -54,7 +54,7 @@ namespace Args.NET
             // If no custom help arg defined, create one with default behavior and find it before everything else
             if (!argDefs.Any(x => x.Name.Equals("help", StringComparison.CurrentCultureIgnoreCase)))
             {
-                ArgDefinition helpDef = new() { Name = "help", Required = false, Description = "Displays the help page.", Usage = "--help" };
+                ArgDefinition helpDef = new() { Name = "help", Required = false, IsFlag = true, Description = "Displays the help page.", Usage = "--help" };
                 ArgDefs["help"] = helpDef;
                 ArgVals["help"] = FindArg(args, helpDef);
                 if (ArgVals["help"] is not null)
