@@ -7,12 +7,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageReadmeFile>../README.md</PackageReadmeFile>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="readme.md" Pack="true" PackagePath="\"/>
-  </ItemGroup>
 
   <PropertyGroup>
     <PackageId>Args.NET</PackageId>
@@ -21,6 +17,8 @@
     <Company></Company>
     <PackageDescription>An extremely simple .NET CLI arg parsing library.</PackageDescription>
     <RepositoryUrl>https://github.com/jpahm/Args.NET</RepositoryUrl>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>Args.NET</Title>
   </PropertyGroup>
 
 </Project>

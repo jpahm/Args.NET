@@ -57,7 +57,7 @@ namespace Args.NET
                 ArgDefinition helpDef = new() { Name = "help", Required = false, IsFlag = true, Description = "Displays the help page.", Usage = "--help" };
                 ArgDefs["help"] = helpDef;
                 ArgVals["help"] = FindArg(args, helpDef);
-                if (ArgVals["help"] is not null)
+                if (ArgVals["help"] != false.ToString())
                 {
                     Console.Write("Usage:\n\n");
                     foreach (var def in argDefs.Append(helpDef))
@@ -70,15 +70,21 @@ namespace Args.NET
             // Read args based on argDefs, store defs keyed by name
             foreach (var def in argDefs)
             {
+                // Extract def.Name
+                string defName = def.Name;
+                // Perform ToLower() on name if comparisonType is case-insensitive
+                if ((int)ComparisonType % 2 == 1)
+                    defName = defName.ToLower();
+
                 // Enforce naming, descriptions, and usage strings
-                if (def.Name == string.Empty)
+                if (defName is null || defName == string.Empty)
                     throw new ArgumentException("An argument definition was missing a name.");
-                if (def.Description == string.Empty)
+                if (def.Description is null || def.Description == string.Empty)
                     throw new ArgumentException($"Argument --{def.Name} is missing a description.");
-                if (def.Usage == string.Empty)
+                if (def.Usage is null || def.Usage == string.Empty)
                     throw new ArgumentException($"Argument --{def.Name} is missing a usage string.");
-                ArgDefs[def.Name] = def;
-                ArgVals[def.Name] = FindArg(args, def);
+                ArgDefs[defName] = def;
+                ArgVals[defName] = FindArg(args, def);
             }
         }
 
@@ -92,6 +98,9 @@ namespace Args.NET
         /// <exception cref="ArgumentException">What went wrong parsing the arg. Includes the usage string if the argument was found but failed to parse.</exception>
         public T? ParseArg<T>(string name, T? defaultValue = default) where T : IParsable<T>
         {
+            // Perform ToLower() if comparisonType is case-insensitive
+            if ((int)ComparisonType % 2 == 1)
+                name = name.ToLower();
             if (!ArgVals.TryGetValue(name, out string? value))
                 throw new ArgumentException($"Tried to parse undefined argument '--{name}'.");
             else if (value == null)
@@ -110,6 +119,9 @@ namespace Args.NET
         /// <returns>The parsed arg value, or <paramref name="defaultValue"/> if the arg wasn't found.</returns>
         public string? ParseArg(string name, string? defaultValue = null)
         {
+            // Perform ToLower() if comparisonType is case-insensitive
+            if ((int)ComparisonType % 2 == 1)
+                name = name.ToLower();
             if (!ArgVals.TryGetValue(name, out string? value))
                 throw new ArgumentException($"Tried to parse undefined argument '--{name}'.");
             else if (value == null)
@@ -134,17 +146,19 @@ namespace Args.NET
                 // Throw if required arg not found
                 if (argDef.Required)
                     throw new ArgumentException($"Required argument '--{argDef.Name}' not found.");
-                else return null;
+                else if (argDef.IsFlag) // Parse as "false" if flag arg is missing
+                    return false.ToString();
+                else // Parse as null if arg isn't a flag
+                    return null;
             }
-            // Argument doesn't have a value after it, return "true" for parsing to bool if argument is a flag, otherwise throw an exception
+            // If arg is a flag, we don't need to check for a value after it -- parse as "true"
+            if (argDef.IsFlag)
+                return true.ToString();
+            // Otherwise, throw an exception if we can't find a value after the arg
             if (idx + 1 >= args.Length || args[idx + 1].StartsWith("--"))
-            {
-                if (argDef.IsFlag)
-                    return true.ToString();
-                else
-                    throw new ArgumentException($"Non-flag argument '--{argDef.Name}' is missing a value.");
-            }
-            else return args[idx + 1];
+                throw new ArgumentException($"Non-flag argument '--{argDef.Name}' is missing a value.");
+            else
+                return args[idx + 1];
         }
     }
 }
