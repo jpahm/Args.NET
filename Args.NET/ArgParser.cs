@@ -51,6 +51,18 @@ namespace Args.NET
         public ArgParser(IEnumerable<ArgDefinition> argDefs, string[] args, StringComparison comparisonType = StringComparison.CurrentCulture)
         {
             ComparisonType = comparisonType;
+
+            // Enforce naming, descriptions, and usage strings
+            foreach (var def in argDefs)
+            {
+                if (def.Name is null || def.Name == string.Empty)
+                    throw new ArgumentException("An argument definition was missing a name.");
+                if (def.Description is null || def.Description == string.Empty)
+                    throw new ArgumentException($"Argument --{def.Name} is missing a description.");
+                if (def.Usage is null || def.Usage == string.Empty)
+                    throw new ArgumentException($"Argument --{def.Name} is missing a usage string.");
+            }
+
             // If no custom help arg defined, create one with default behavior and find it before everything else
             if (!argDefs.Any(x => x.Name.Equals("help", StringComparison.CurrentCultureIgnoreCase)))
             {
@@ -62,7 +74,10 @@ namespace Args.NET
                     Console.Write("Usage:\n\n");
                     foreach (var def in argDefs.Append(helpDef))
                     {
-                        Console.Write($"{def.Usage}\n{def.Description}\n\n");
+                        if (def.Required)
+                            Console.Write($"{def.Usage}\n{def.Description}\n\n");
+                        else
+                            Console.Write($"[{def.Usage}]\n{def.Description}\n\n");
                     }
                     Environment.Exit(0);
                 }
@@ -76,13 +91,6 @@ namespace Args.NET
                 if ((int)ComparisonType % 2 == 1)
                     defName = defName.ToLower();
 
-                // Enforce naming, descriptions, and usage strings
-                if (defName is null || defName == string.Empty)
-                    throw new ArgumentException("An argument definition was missing a name.");
-                if (def.Description is null || def.Description == string.Empty)
-                    throw new ArgumentException($"Argument --{def.Name} is missing a description.");
-                if (def.Usage is null || def.Usage == string.Empty)
-                    throw new ArgumentException($"Argument --{def.Name} is missing a usage string.");
                 ArgDefs[defName] = def;
                 ArgVals[defName] = FindArg(args, def);
             }

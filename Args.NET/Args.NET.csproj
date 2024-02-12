@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <PackageId>Args.NET</PackageId>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <Authors>jpahm</Authors>
     <Company></Company>
     <PackageDescription>An extremely simple .NET CLI arg parsing library.</PackageDescription>
