@@ -8,10 +8,12 @@
 
   <PropertyGroup>
     <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\readme.md" Pack="true" PackagePath=""/>
+    <None Include="..\LICENSE.txt" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <PropertyGroup>

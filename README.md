@@ -6,9 +6,9 @@
 
 As such, Args.NET is heavily opinionated towards simplistic elegance.
 
-- Args have to be explcitly defined in the parser constructor in order to be parsed
+- Args have to be explicitly defined at parser construction, and are immediately searched for
 - Args are required to provide a description, a usage string, and whether they're required or not
-- A --help flag argument is automatically provided if not otherwise defined
+- A --help flag argument is automatically provided if not already defined
 - Missing required args automatically throw an exception on parser construction
 - Missing optional args will return a provided default value on parse call
 - Only the '--' prefix arg naming notation is supported
